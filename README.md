@@ -11,6 +11,7 @@ chmod +x setup.sh
 sudo ./setup.sh
 ```
 - Usage
+
 `./scanner.sh <List of URLS>`
 ## TODO
 - [ ] Add A GUI
