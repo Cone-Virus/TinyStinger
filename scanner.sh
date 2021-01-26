@@ -5,6 +5,13 @@ waflesstemp=$(mktemp WAFless-XXXXXX)
 waftemp=$(mktemp WAF-XXXXXX)
 dirtemp=$(mktemp DIR-XXXXXX)
 
+if [[ $1 == "" ]] 
+then
+echo "Please give a URL List"
+echo "Example: ./scanner.sh <URL List>"
+exit 0
+fi
+
 echo "Reading List"
 
 file=$(cat $1)
