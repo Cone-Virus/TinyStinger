@@ -9,7 +9,7 @@ I am not an expert coder so there will probably be a ton of bugs and if somethin
 - Before first use do the following:
 ```
 chmod +x setup.sh
-sudo ./setup.sh
+./setup.sh
 ```
 - Usage
 ```
