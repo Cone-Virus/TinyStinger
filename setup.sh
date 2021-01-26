@@ -7,4 +7,5 @@ sudo pip3 install -r dirsearch/requirements.txt
 cd wafw00f/
 sudo python3 setup.py build
 sudo python3 setup.py install
+sudo apt-get install yad
 cd ..
