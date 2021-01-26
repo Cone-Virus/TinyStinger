@@ -2,6 +2,7 @@
 
 URLFILE=$1
 wordlist="dirsearch/db/dicc.txt"
+exten=""
 
 echo "
 ▀█▀ █ █▄░█ █▄█   █▀ ▀█▀ █ █▄░█ █▀▀ █▀▀ █▀█
@@ -14,10 +15,11 @@ Created by: @Cone_Virus
 
 function help_menu(){
         echo "Please give a URL List
-Example: ./scanner.sh <URL List>
+Example: ./scanner.sh <URL List> <Options>
 
 Options:
--w <Wordlist> : Use a custom wordlist in directory scanning"
+-w <Wordlist>     : Use a custom wordlist in directory scanning
+-x <Extensions>   : Use a list of extensions in directory scanning EX: html,jpg,txt"
         exit 0
 }
 
@@ -64,7 +66,22 @@ do
                                 help_menu
                         else
                                 file_check "${args[$(($count + 1))]}" "wordlist"
-                                wordlist="${args[$(($count + 1))]}" 
+                                wordlist="${args[$(($count + 1))]}"
+                                #count=$(($count+1))
+                        fi
+                elif [ "$arg" == "-x" ]
+                then
+                        if [ "${args[$(($count + 1))]}" == "" ]
+                        then
+                                echo "No extensions provided"
+                                help_menu
+                        fi
+                        if [ "$exten" == "" ]
+                        then
+                                exten="${args[$(($count + 1))]}"
+                        else
+                                echo "Can't set extensions more then once"
+                                help_menu
                         fi
         fi
         count=$(($count+1))
@@ -76,6 +93,11 @@ file_check "$URLFILE" "URL List"
 waflesstemp=$(mktemp WAFless-XXXXXX)
 waftemp=$(mktemp WAF-XXXXXX)
 dirtemp=$(mktemp DIR-XXXXXX)
+
+if [ "$exten" == "" ]
+then
+        ext="php,html,js,txt"
+fi
 
 echo "Reading List"
 
@@ -103,7 +125,7 @@ echo "WAF Results"
 cat "WAF-Results"
 
 echo "Running Dirsearch on WAFLess"
-dirsearch/dirsearch.py -l $waflesstemp -w $wordlist -e php,html,js,txt --plain-text=$dirtemp
+dirsearch/dirsearch.py -l "$waflesstemp" -w "$wordlist" -e "$exten" --plain-text=$dirtemp
 
 echo "Ordering per URL"
 file=$(cat $waflesstemp)
