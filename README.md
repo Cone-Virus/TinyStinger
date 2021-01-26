@@ -23,10 +23,11 @@ Created by: @Cone_Virus
                           ""
 
 Please give a URL List
-Example: ./scanner.sh <URL List>
+Example: ./scanner.sh <URL List> <Options>
 
 Options:
--w <Wordlist> : Use a custom wordlist in directory scanning
+-w <Wordlist>     : Use a custom wordlist in directory scanning
+-x <Extensions>   : Use a list of extensions in directory scanning EX: html,jpg,txt
 ```
 ## TODO
 - [ ] Add A GUI
