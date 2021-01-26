@@ -1,5 +1,4 @@
 ## TinyStinger
-* * *
 - What is it?
 
 A small Bug Bounty scanner that I have been working on to not only make doing bug bounties easier but to help other small bug bounty enthuasiasts.
@@ -13,8 +12,22 @@ chmod +x setup.sh
 sudo ./setup.sh
 ```
 - Usage
+```
+./scanner.sh -h
 
-`./scanner.sh <List of URLS>`
+▀█▀ █ █▄░█ █▄█   █▀ ▀█▀ █ █▄░█ █▀▀ █▀▀ █▀█
+░█░ █ █░▀█ ░█░   ▄█ ░█░ █ █░▀█ █▄█ ██▄ █▀▄
+Created by: @Cone_Virus
+                         (\\
+....-_...___-..-.._..-. -###)
+                          ""
+
+Please give a URL List
+Example: ./scanner.sh <URL List>
+
+Options:
+-w <Wordlist> : Use a custom wordlist in directory scanning
+```
 ## TODO
 - [ ] Add A GUI
 - [ ] Add way more tooling
