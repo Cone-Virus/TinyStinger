@@ -18,8 +18,9 @@ function help_menu(){
 Example: ./scanner.sh <URL List> <Options>
 
 Options:
--w <Wordlist>     : Use a custom wordlist in directory scanning
--x <Extensions>   : Use a list of extensions in directory scanning EX: html,jpg,txt"
+-w <Wordlist>       : Use a custom wordlist in directory scanning
+-x <Extensions>     : Use a set of extensions in directory scanning EX: html,jpg,txt
+-X <Extension List> : Use a list of extensions in directory scanning"
         exit 0
 }
 
@@ -67,7 +68,6 @@ do
                         else
                                 file_check "${args[$(($count + 1))]}" "wordlist"
                                 wordlist="${args[$(($count + 1))]}"
-                                #count=$(($count+1))
                         fi
                 elif [ "$arg" == "-x" ]
                 then
@@ -79,6 +79,22 @@ do
                         if [ "$exten" == "" ]
                         then
                                 exten="${args[$(($count + 1))]}"
+                        else
+                                echo "Can't set extensions more then once"
+                                help_menu
+                        fi
+                elif [ "$arg" == "-X" ]
+                then
+                        if [ "${args[$(($count + 1))]}" == "" ]
+                        then
+                                echo "No extensions list provided"
+                                help_menu
+                        fi
+                        if [ "$exten" == "" ]
+                        then
+                                file_check "${args[$(($count + 1))]}" "extension list"
+                                truncate -s -1 "${args[$(($count + 1))]}"
+                                exten=$(cat "${args[$(($count + 1))]}" | sed ':a;N;$!ba;s/\n/,/g')
                         else
                                 echo "Can't set extensions more then once"
                                 help_menu
@@ -96,7 +112,7 @@ dirtemp=$(mktemp DIR-XXXXXX)
 
 if [ "$exten" == "" ]
 then
-        ext="php,html,js,txt"
+        exten="php,html,js,txt"
 fi
 
 echo "Reading List"
