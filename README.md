@@ -23,3 +23,5 @@ sudo ./setup.sh
 - [ ] Make a better readme
 ## Credits
 This tool is a combination of others marvelous code so of course I have a credits for each tool used
+## Contributors
+[@zpaav](https://github.com/zpaav) for all the testing and tips
