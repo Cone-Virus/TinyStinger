@@ -26,8 +26,9 @@ Please give a URL List
 Example: ./scanner.sh <URL List> <Options>
 
 Options:
--w <Wordlist>     : Use a custom wordlist in directory scanning
--x <Extensions>   : Use a list of extensions in directory scanning EX: html,jpg,txt
+-w <Wordlist>       : Use a custom wordlist in directory scanning
+-x <Extensions>     : Use a set of extensions in directory scanning EX: html,jpg,txt
+-X <Extension List> : Use a list of extensions in directory scanning
 ```
 ## TODO
 - [ ] Add A GUI
