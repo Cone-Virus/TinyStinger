@@ -1,8 +1,10 @@
 ## TinyStinger
 * * *
 - What is it?
+
 A small Bug Bounty scanner that I have been working on to not only make doing bug bounties easier but to help other small bug bounty enthuasiasts.
 - Keep in mind
+
 I am not an expert coder so there will probably be a ton of bugs and if something bad happens to your system I am not liable. But nothing should just a quick disclaimer.
 ## Usage 
 - Before first use do the following:
