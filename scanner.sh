@@ -36,6 +36,14 @@ function file_check(){
 
 }
 
+if [ ! -d "dirsearch" ] || [ ! -d "wafw00f" ]
+then
+        echo "Please run the setup script with the following commands before using the scanner:
+chmod +x setup.sh
+sudo ./setup.sh"
+        exit 0
+fi
+
 if [[ $# == 0 ]] 
 then
         help_menu
