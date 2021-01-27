@@ -31,7 +31,8 @@ Options:
 -X <Extension List> : Use a list of extensions in directory scanning
 ```
 ## TODO
-- [ ] Add A GUI
+- [x] Add A GUI
+- [ ] Make a better GUI
 - [ ] Add way more tooling
 - [ ] Give this tool a better name or keep it
 - [ ] Add a way for list of extensions 
