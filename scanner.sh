@@ -3,6 +3,9 @@
 URLFILE=$1
 wordlist="dirsearch/db/dicc.txt"
 exten=""
+OLDIFS="$IFS"
+IFS="
+"
 
 echo "
 ▀█▀ █ █▄░█ █▄█   █▀ ▀█▀ █ █▄░█ █▀▀ █▀▀ █▀█
@@ -108,7 +111,8 @@ file_check "$URLFILE" "URL List"
 
 waflesstemp=$(mktemp WAFless-XXXXXX)
 waftemp=$(mktemp WAF-XXXXXX)
-dirtemp=$(mktemp DIR-XXXXXX)
+lootdir=$(mktemp -u LOOT-XXXXX)
+mkdir $lootdir/
 
 if [ "$exten" == "" ]
 then
@@ -122,6 +126,7 @@ echo "Detecting WAF"
 for i in $file
 do
         request=$(python3 wafw00f/wafw00f/main.py $i |  grep -w WAF)
+        sleep 2
         filter=$(echo $request | grep "No WAF")
         if [[ -z "$filter" ]]
         then
@@ -139,19 +144,35 @@ cat $waftemp >> "WAF-Results"
 
 echo "WAF Results"
 cat "WAF-Results"
+mv "WAF-Results" "$lootdir"
 
 echo "Running Dirsearch on WAFLess"
-dirsearch/dirsearch.py -l "$waflesstemp" -w "$wordlist" -e "$exten" --plain-text=$dirtemp
+file=$(cat $waflesstemp)
+for i in $file
+do
+        temp=$(echo "${i//\/}")
+        dirsearch/dirsearch.py -u "$i" -w "$wordlist" -e "$exten" --plain-text="$temp"
+done
 
 echo "Ordering per URL"
 file=$(cat $waflesstemp)
 for i in $file
 do
-        echo "Results for $i" >> "Directory-Results"
-        echo "------------------------------------" >> "Directory-Results"
-        cat $dirtemp | grep $i | grep -v 503 >> "Directory-Results"
+        temp=$(echo "${i//\/}")
+        echo "Results for $i" >> "$lootdir/$temp-Directory-Results"
+        echo "------------------------------------" >> "$lootdir/$temp-Directory-Results"
+        cat $temp | grep $i | grep -v 503 >> "$lootdir/$temp-Directory-Results"
+        rm $temp
 done
 
-rm $dirtemp
 rm $waftemp
 rm $waflesstemp
+
+yadb=0
+while [ $yadb -eq "0" ];do 
+    fc=$(basename -s -Directory-Results $(find $lootdir/ -name "*-Directory-Results") |yad --list --width=500 --height=500 --center --column="WAFless Directory Results" --separator="")
+    yadb=$?
+    if [ $yadb -eq "0" ]; then 
+       cat $lootdir/$fc-Directory-Results |yad --text-info --width=800 --height=300
+    fi
+done
