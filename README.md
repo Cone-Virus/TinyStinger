@@ -32,12 +32,13 @@ Options:
 ```
 ## TODO
 - [x] Add A GUI
-- [ ] Make a better GUI
+- [x] Make a better GUI
+- [ ] Make it look nice with more options
 - [ ] Add way more tooling
-- [ ] Give this tool a better name or keep it
+- [x] Give this tool a better name or keep it (Keeping it)
 - [ ] Add a way for list of extensions 
 - [ ] Make a better readme
 ## Credits
 This tool is a combination of others marvelous code so of course I have a credits for each tool used
 ## Contributors
-[@zpaav](https://github.com/zpaav) for all the testing and tips
+[@zpaav](https://github.com/zpaav) for all the testing, tips, and all the web help
