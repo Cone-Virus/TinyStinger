@@ -46,10 +46,8 @@ function file_check(){
 }
 
 #Simple check to see if setup.sh was run
-if [[ -d "dirsearch" && -d "wafw00f" ]]
+if ! [[  -d "dirsearch"  &&  -d "wafw00f" ]]
 then
-        echo "Setup Check Cleared"
-else
         echo "Please run the setup script with the following commands before using the scanner:
 chmod +x setup.sh
 ./setup.sh"
