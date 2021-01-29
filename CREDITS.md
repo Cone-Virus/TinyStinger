@@ -4,3 +4,6 @@
 [Sandro Gauci](https://twitter.com/sandrogauci)
 
 [Paniki](https://twitter.com/0xinfection)
+## [Eel](https://github.com/ChrisKnott/Eel)
+[Chris Knott](https://github.com/ChrisKnott)
+
