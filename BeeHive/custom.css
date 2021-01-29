@@ -1,0 +1,10 @@
+body {
+        background: rgb(0, 60, 60); # Off Dark Green color
+}
+div.ex1 {
+  max-height:50px;
+  border: 1px solid #73AD21;
+}
+p {
+        background-color: rgb(255,255,255);
+}

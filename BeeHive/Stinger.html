@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Tiny Stinger Beta</title>
+        <link rel="stylesheet" href="custom.css">
+        <script src="utility.js"></script> 
+        <script type='text/javascript' src='/eel.js'></script>
+    </head>
+    
+    <body>
+      <form onsubmit="select_waf(); return false;" >
+        <select name="WAF" id="waf-select">
+          <option value="less">WAF Less</option>
+          <option value="full">WAF Full</option>
+        </select>        
+        <button type="submit">Select WAF</button>
+      </form>
+      <div id='waf-results'>---</div>
+    </body>
+</html>
