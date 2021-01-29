@@ -1,11 +1,11 @@
 #!/bin/bash
 
+#Basic argument set
 URLFILE=$1
 wordlist="dirsearch/db/dicc.txt"
 exten=""
-OLDIFS="$IFS"
-IFS="
-"
+
+
 
 echo "
 ▀█▀ █ █▄░█ █▄█   █▀ ▀█▀ █ █▄░█ █▀▀ █▀▀ █▀█
@@ -16,6 +16,7 @@ Created by: @Cone_Virus
                           \"\"
 "
 
+#Help Menu
 function help_menu(){
         echo "Please give a URL List
 Example: ./scanner.sh <URL List> <Options>
@@ -27,6 +28,7 @@ Options:
         exit 0
 }
 
+#Validates the existence of a text file
 function file_check(){
         if [ -f $1 ]; 
         then
@@ -42,6 +44,7 @@ function file_check(){
 
 }
 
+#Simple check to see if setup.sh was run
 if [ ! -d "dirsearch" ] || [ ! -d "wafw00f" ]
 then
         echo "Please run the setup script with the following commands before using the scanner:
@@ -55,6 +58,7 @@ then
         help_menu
 fi
 
+#Arguments for scanner
 args=("$@")
 count=0
 for arg in "$@"
@@ -96,8 +100,7 @@ do
                         if [ "$exten" == "" ]
                         then
                                 file_check "${args[$(($count + 1))]}" "extension list"
-                                truncate -s -1 "${args[$(($count + 1))]}"
-                                exten=$(cat "${args[$(($count + 1))]}" | sed ':a;N;$!ba;s/\n/,/g')
+                                exten=$(awk /./ "${args[$(($count + 1))]}" | sed ':a;N;$!ba;s/\n/,/g')
                         else
                                 echo "Can't set extensions more then once"
                                 help_menu
@@ -108,10 +111,11 @@ done
 
 file_check "$URLFILE" "URL List"
 
-
+#Generate Temps
 waflesstemp=$(mktemp WAFless-XXXXXX)
 waftemp=$(mktemp WAF-XXXXXX)
-lootdir=$(mktemp -u LOOT-XXXXX)
+LTemp=$(mktemp -u LOOT-XXXXX)
+lootdir=$(echo "BeeHive/$LTemp")
 mkdir $lootdir/
 
 if [ "$exten" == "" ]
@@ -121,6 +125,7 @@ fi
 
 echo "Reading List"
 
+# Scan for WAF on target
 file=$(cat $1)
 echo "Detecting WAF"
 for i in $file
@@ -136,16 +141,64 @@ do
         fi
 done
 
-echo "Saving WAF results"
-echo "-- WAFLess --" >> "WAF-Results"
-cat $waflesstemp >> "WAF-Results"
-echo "-- WAFFull --" >> "WAF-Results"
-cat $waftemp >> "WAF-Results"
+#Display WAF Results
+echo "WAF results"
+echo "-- WAFLess --" 
+cat $waflesstemp 
+echo "-- WAFFull --" 
+cat $waftemp 
 
-echo "WAF Results"
-cat "WAF-Results"
-mv "WAF-Results" "$lootdir"
+#Generate Database.json
+echo "Creating JSON DB"
 
+number1=$(awk /./  $waflesstemp | wc -l | awk '{ print $1 }')
+number2=$(awk /./  $waftemp | wc -l | awk '{ print $1 }')
+echo "{" >> "Database.json"
+echo "        \"loot\": \"$LTemp\"," >> "Database.json" 
+echo "        \"less\": [" >> "Database.json"
+
+count=0
+file=$(cat "$waflesstemp")
+for i in $file
+do
+        echo "                {" >> "Database.json"
+        echo "                        \"url\" : \"$i\"," >> "Database.json"
+        echo "                        \"dir\" : \"$count\"" >> "Database.json"
+        if [[ $count -eq $(($number1 - 1)) ]]
+        then
+                echo "                }" >> "Database.json"
+        else
+                echo "                }," >> "Database.json"
+        fi
+        count=$((count + 1))
+done
+
+echo "        ]," >> "Database.json"
+
+echo "        \"full\": [" >> "Database.json"
+
+count="0"
+file=$(cat $waftemp)
+for i in $file
+do
+        echo "                {" >> "Database.json"
+        echo "                        \"url\" : \"$i\"" >> "Database.json"
+        if [[ $count != $(($number2 - 1)) ]]
+        then
+                echo "                }," >> "Database.json"
+        else
+                echo "                }" >> "Database.json"
+        fi
+        count=$(($count + 1))
+done
+
+echo "        ]" >> "Database.json"
+echo "}" >> "Database.json"
+
+
+mv "Database.json" "$lootdir"
+
+#Scan wafless with dirsearch
 echo "Running Dirsearch on WAFLess"
 file=$(cat $waflesstemp)
 for i in $file
@@ -154,25 +207,27 @@ do
         dirsearch/dirsearch.py -u "$i" -w "$wordlist" -e "$exten" --plain-text="$temp"
 done
 
+#Organizes the results into an easier to read formfactor and stores it into lootdir aswell as adds it
+#To the Database.json
+count=0
 echo "Ordering per URL"
 file=$(cat $waflesstemp)
 for i in $file
 do
         temp=$(echo "${i//\/}")
-        echo "Results for $i" >> "$lootdir/$temp-Directory-Results"
-        echo "------------------------------------" >> "$lootdir/$temp-Directory-Results"
-        cat $temp | grep $i | grep -v 503 >> "$lootdir/$temp-Directory-Results"
+        echo "Results for $i<br>" >> "$lootdir/$temp-Directory-Results"
+        echo "------------------------------------<br>" >> "$lootdir/$temp-Directory-Results"
+        cat $temp | grep $i | grep -v 503 | awk '{print $0,"<br>"}' >> "$lootdir/$temp-Directory-Results"
+        sed -ir "s/\"dir\" : \"$count\"/\"dir\" : \"$temp-Directory-Results\"/" "$lootdir/Database.json"
+        count=$(($count + 1))
         rm $temp
+        rm "$lootdir/Database.jsonr"
 done
 
+#Delete temp files
 rm $waftemp
 rm $waflesstemp
 
-yadb=0
-while [ $yadb -eq "0" ];do 
-    fc=$(basename -s -Directory-Results $(find $lootdir/ -name "*-Directory-Results") |yad --list --width=500 --height=500 --center --column="WAFless Directory Results" --separator="")
-    yadb=$?
-    if [ $yadb -eq "0" ]; then 
-       cat $lootdir/$fc-Directory-Results |yad --text-info --width=800 --height=300
-    fi
-done
+#Deploy GUI
+echo "Deploying GUI"
+python3 StingerGUI.py $lootdir
