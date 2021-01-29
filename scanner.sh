@@ -22,6 +22,7 @@ function help_menu(){
 Example: ./scanner.sh <URL List> <Options>
 
 Options:
+-GUI <BeeHive Loot> : Load a Loot directory in BeeHive EX: BeeHive/LOOT-iSidt
 -w <Wordlist>       : Use a custom wordlist in directory scanning
 -x <Extensions>     : Use a set of extensions in directory scanning EX: html,jpg,txt
 -X <Extension List> : Use a list of extensions in directory scanning"
@@ -45,14 +46,17 @@ function file_check(){
 }
 
 #Simple check to see if setup.sh was run
-if [ ! -d "dirsearch" ] || [ ! -d "wafw00f" ]
+if [[ -d "dirsearch" && -d "wafw00f" ]]
 then
+        echo "Setup Check Cleared"
+else
         echo "Please run the setup script with the following commands before using the scanner:
 chmod +x setup.sh
 ./setup.sh"
         exit 0
 fi
 
+#If none supplied print a menu
 if [[ $# == 0 ]] 
 then
         help_menu
@@ -66,6 +70,17 @@ do
         if [ "$arg" == "--help" ] || [ "$arg" == "-h" ] 
         then
                         help_menu
+                elif [ "$arg" == "-GUI" ]
+                then
+                        if [ -d ${args[$(($count + 1))]} ]
+                        then
+                                echo "Deploying GUI"
+                                python3 StingerGUI.py ${args[$(($count + 1))]}
+                                exit 0
+                        else
+                                echo "Invalid path or loot dir in BeeHive"
+                                help_menu
+                        fi
                 elif [ "$arg" == "-w" ]
                 then
                         if [ "${args[$(($count + 1))]}" == "" ]
