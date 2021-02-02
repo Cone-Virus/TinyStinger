@@ -16,6 +16,16 @@ Created by: @Cone_Virus
                           \"\"
 "
 
+## Status Function
+function stat(){
+        if [[ $1 == 1 ]]
+        then
+                echo "Status: Scanning $1/$2 for $3..."
+        else
+                echo -e "\e[1A\e[KStatus: Scanning $1/$2 for $3..."
+        fi
+}
+
 #Help Menu
 function help_menu(){
         echo "Please give a URL List
@@ -139,11 +149,14 @@ fi
 echo "Reading List"
 
 # Scan for WAF on target
-file=$(cat $1)
+file=$(cat "$URLFILE")
+count=1
+total=$(awk /./ "$URLFILE" | wc -l)
 echo "Detecting WAF"
 for i in $file
 do
-        request=$(python3 wafw00f/wafw00f/main.py $i |  grep -w WAF)
+        stat $count $total "WAF" 
+        request=$(python3 wafw00f/wafw00f/main.py $i 2>/dev/null | grep -w "WAF")
         sleep 2
         filter=$(echo $request | grep "No WAF")
         if [[ -z "$filter" ]]
@@ -152,6 +165,7 @@ do
         else
                 echo $i >> $waflesstemp
         fi
+        count=$(($count + 1))
 done
 
 #Display WAF Results
@@ -211,28 +225,23 @@ echo "}" >> "Database.json"
 
 mv "Database.json" "$lootdir"
 
-#Scan wafless with dirsearch
+#Scan wafless with dirsearch and organizing said file
 echo "Running Dirsearch on WAFLess"
+count=0
+counter=1
 file=$(cat $waflesstemp)
+total=$(awk /./ $waflesstemp | wc -l)
 for i in $file
 do
+        stat $counter $total "Directories"
         temp=$(echo "${i//\/}")
         dirsearch/dirsearch.py -u "$i" -w "$wordlist" -e "$exten" --plain-text="$temp"
-done
-
-#Organizes the results into an easier to read formfactor and stores it into lootdir aswell as adds it
-#To the Database.json
-count=0
-echo "Ordering per URL"
-file=$(cat $waflesstemp)
-for i in $file
-do
-        temp=$(echo "${i//\/}")
         echo "Results for $i<br>" >> "$lootdir/$temp-Directory-Results"
         echo "------------------------------------<br>" >> "$lootdir/$temp-Directory-Results"
         cat $temp | grep $i | grep -v 503 | awk '{print $0,"<br>"}' >> "$lootdir/$temp-Directory-Results"
         sed -ir "s/\"dir\" : \"$count\"/\"dir\" : \"$temp-Directory-Results\"/" "$lootdir/Database.json"
         count=$(($count + 1))
+        counter=$(($counter + 1))
         rm $temp
         rm "$lootdir/Database.jsonr"
 done
