@@ -2,7 +2,7 @@
 
 #Basic argument set
 URLFILE=$1
-wordlist="dirsearch/db/dicc.txt"
+wordlist="Tools/dirsearch/db/dicc.txt"
 exten=""
 
 
@@ -56,7 +56,7 @@ function file_check(){
 }
 
 #Simple check to see if setup.sh was run
-if ! [[  -d "dirsearch"  &&  -d "wafw00f" ]]
+if ! [[  -d "Tools/dirsearch"  &&  -d "Tools/wafw00f" ]]
 then
         echo "Please run the setup script with the following commands before using the scanner:
 chmod +x setup.sh
@@ -156,7 +156,7 @@ echo "Detecting WAF"
 for i in $file
 do
         stat $count $total "WAF" 
-        request=$(python3 wafw00f/wafw00f/main.py $i 2>/dev/null | grep -w "WAF")
+        request=$(python3 Tools/wafw00f/wafw00f/main.py $i 2>/dev/null | grep -w "WAF")
         sleep 2
         filter=$(echo $request | grep "No WAF")
         if [[ -z "$filter" ]]
@@ -235,7 +235,7 @@ for i in $file
 do
         stat $counter $total "Directories"
         temp=$(echo "${i//\/}")
-        dirsearch/dirsearch.py -u "$i" -w "$wordlist" -e "$exten" --plain-text="$temp"
+        Tools/dirsearch/dirsearch.py -u "$i" -w "$wordlist" -e "$exten" --plain-text="$temp"
         echo "Results for $i<br>" >> "$lootdir/$temp-Directory-Results"
         echo "------------------------------------<br>" >> "$lootdir/$temp-Directory-Results"
         cat $temp | grep $i | grep -v 503 | awk '{print $0,"<br>"}' >> "$lootdir/$temp-Directory-Results"
