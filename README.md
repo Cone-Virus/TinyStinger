@@ -37,7 +37,7 @@ Options:
 - [ ] Make it look nice with more options
 - [ ] Add way more tooling
 - [x] Give this tool a better name or keep it (Keeping it)
-- [ ] Add a way for list of extensions 
+- [x] Add a way for list of extensions 
 - [ ] Make a better readme
 ## Credits
 This tool is a combination of others marvelous code so of course I have a credits for each tool used
