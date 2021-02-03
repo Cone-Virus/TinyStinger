@@ -30,6 +30,7 @@ Options:
 -w <Wordlist>       : Use a custom wordlist in directory scanning
 -x <Extensions>     : Use a set of extensions in directory scanning EX: html,jpg,txt
 -X <Extension List> : Use a list of extensions in directory scanning
+-r <Depth>          : Enable recursion and at what depth (0 is infinite) (1-4) EX: -r 3
 ```
 ## TODO
 - [x] Add A GUI
