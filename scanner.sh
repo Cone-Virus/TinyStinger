@@ -2,8 +2,9 @@
 
 #Basic argument set
 URLFILE=$1
-wordlist="Tools/dirsearch/db/dicc.txt"
+wordlist="/usr/share/wordlists/dirb/common.txt"
 exten=""
+recursion="-n"
 
 
 
@@ -35,7 +36,8 @@ Options:
 -GUI <BeeHive Loot> : Load a Loot directory in BeeHive EX: BeeHive/LOOT-iSidt
 -w <Wordlist>       : Use a custom wordlist in directory scanning
 -x <Extensions>     : Use a set of extensions in directory scanning EX: html,jpg,txt
--X <Extension List> : Use a list of extensions in directory scanning"
+-X <Extension List> : Use a list of extensions in directory scanning
+-r <Depth>          : Enable recursion and at what depth (0 is infinite) (1-4) EX: -r 3"
         exit 0
 }
 
@@ -56,7 +58,7 @@ function file_check(){
 }
 
 #Simple check to see if setup.sh was run
-if ! [[  -d "Tools/dirsearch"  &&  -d "Tools/wafw00f" ]]
+if ! [[  -d "Tools/httprober"  &&  -d "Tools/wafw00f" ]]
 then
         echo "Please run the setup script with the following commands before using the scanner:
 chmod +x setup.sh
@@ -128,6 +130,20 @@ do
                                 echo "Can't set extensions more then once"
                                 help_menu
                         fi
+                elif [ "$arg" == "-r" ]
+                then
+                        if [ "${args[$(($count + 1))]}" == "" ]
+                        then
+                                echo "No number provided"
+                                help_menu
+                        fi
+                        if (("${args[$(($count + 1))]}" >= "0")) && (("${args[$(($count + 1))]}" <= "4"))
+                        then
+                                recursion="-d ${args[$(($count + 1))]}"
+                        else
+                                echo "heck"
+                        fi
+
         fi
         count=$(($count+1))
 done
@@ -148,10 +164,12 @@ fi
 
 echo "Reading List"
 
+#Read wildcards here
+
 # Scan for WAF on target
-file=$(cat "$URLFILE")
+file=$(awk /./ "$URLFILE" | Tools/httprober/httprober)
 count=1
-total=$(awk /./ "$URLFILE" | wc -l)
+total=$(awk /./ "$URLFILE" | Tools/httprober/httprober | wc -l)
 echo "Detecting WAF"
 for i in $file
 do
@@ -235,10 +253,8 @@ for i in $file
 do
         stat $counter $total "Directories"
         temp=$(echo "${i//\/}")
-        Tools/dirsearch/dirsearch.py -u "$i" -w "$wordlist" -e "$exten" --plain-text="$temp"
-        echo "Results for $i<br>" >> "$lootdir/$temp-Directory-Results"
-        echo "------------------------------------<br>" >> "$lootdir/$temp-Directory-Results"
-        cat $temp | grep $i | grep -v 503 | awk '{print $0,"<br>"}' >> "$lootdir/$temp-Directory-Results"
+        Tools/feroxbuster $recursion -u "$i" -w "$wordlist" -x "$exten" -o "$temp"
+        cat $temp | awk '{print $0,"<br>"}' >> "$lootdir/$temp-Directory-Results"
         sed -ir "s/\"dir\" : \"$count\"/\"dir\" : \"$temp-Directory-Results\"/" "$lootdir/Database.json"
         count=$(($count + 1))
         counter=$(($counter + 1))
@@ -253,3 +269,4 @@ rm $waflesstemp
 #Deploy GUI
 echo "Deploying GUI"
 python3 StingerGUI.py $lootdir
+
