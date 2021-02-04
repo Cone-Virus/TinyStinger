@@ -1,10 +1,31 @@
 body {
-        background: rgb(0, 60, 60); # Off Dark Green color
+        background-color: rgb(0,0,0)
 }
-div.ex1 {
-  max-height:50px;
-  border: 1px solid #73AD21;
-}
-p {
+
+.show {
         background-color: rgb(255,255,255);
+        top: 0;
+        height: 825px;
+        width: 74%;
+}
+
+button {
+        background-color: #00E01A; /* Green */
+        border: none;
+        color: black;
+        padding: 4px 6px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        margin: 4px 2px;
+        cursor: pointer;
+}
+
+select {
+        width: 20%;
+        padding: 2px 5px;
+        border: none;
+        border-radius: 4px;
+        background-color: #F1F1F1;
 }
