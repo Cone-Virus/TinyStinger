@@ -5,6 +5,7 @@ URLFILE=$1
 wordlist="/usr/share/wordlists/dirb/common.txt"
 exten=""
 recursion="-n"
+outlist=""
 
 
 
@@ -33,11 +34,18 @@ function help_menu(){
 Example: ./scanner.sh <URL List> <Options>
 
 Options:
--GUI <BeeHive Loot> : Load a Loot directory in BeeHive EX: BeeHive/LOOT-iSidt
--w <Wordlist>       : Use a custom wordlist in directory scanning
--x <Extensions>     : Use a set of extensions in directory scanning EX: html,jpg,txt
--X <Extension List> : Use a list of extensions in directory scanning
--r <Depth>          : Enable recursion and at what depth (0 is infinite) (1-4) EX: -r 3"
+
+--General Options--
+-GUI <BeeHive Loot>     : Load a Loot directory in BeeHive EX: BeeHive/LOOT-iSidt
+
+--Scope Options--
+-os <Out of Scope List> : Load a list of targets out of scope to be removed from target list
+
+--Directory Scanning--
+-w <Wordlist>           : Use a custom wordlist in directory scanning
+-x <Extensions>         : Use a set of extensions in directory scanning EX: html,jpg,txt
+-X <Extension List>     : Use a list of extensions in directory scanning
+-r <Depth>              : Enable recursion and at what depth (0 is infinite) (1-4) EX: -r 3"
         exit 0
 }
 
@@ -141,8 +149,18 @@ do
                         then
                                 recursion="-d ${args[$(($count + 1))]}"
                         else
-                                echo "heck"
+                                echo "Invalid number"
+                                help_menu
                         fi
+                elif [ "$arg" == "-os" ]
+                then
+                        if [ "${args[$(($count + 1))]}" == "" ]
+                        then
+                                echo "No out of scope list provided"
+                                help_menu
+                        fi
+                        file_check "${args[$(($count + 1))]}" "Out of Scope List"
+                        $outlist="${args[$(($count + 1))]}"
 
         fi
         count=$(($count+1))
@@ -159,17 +177,43 @@ mkdir $lootdir/
 
 if [ "$exten" == "" ]
 then
-        exten="php,html,js,txt"
+        exten="php"
 fi
 
 echo "Reading List"
 
-#Read wildcards here
+echo "Looking for Subdomains"
+#Find subdomains here
+temptemp=$(mktemp TEST-XXXXXX)
+temptargets=$(mktemp TAR-XXXXXX)
+cat $URLFILE > $temptargets
+wildcards=$(cat $URLFILE | grep "*." | sed 's/*.//g')
+for i in $wildcards
+do
+        sed -ir "s/$i//" $temptargets
+        Tools/subfinder -d $i -o $temptemp 2>/dev/null
+        cat $temptemp >> $temptargets
+done
 
-# Scan for WAF on target
-file=$(awk /./ "$URLFILE" | Tools/httprober/httprober)
+if [ $outlist != "" ]
+then
+        echo "Removing Out of Scope Targets"
+        outofscope=$(cat $outlist)
+        for i in $outofscope
+        do
+                sed -ir "s/$i//" $temptargets
+        done
+fi
+
+#Validate targets
+echo "Validating Targets"
+list=$(cat $temptargets | sort | uniq | Tools/dnsx 2>/dev/null | Tools/httprober/httprober)
+rm $temptemp
+rm $temptargets
+
+file=$list
 count=1
-total=$(awk /./ "$URLFILE" | Tools/httprober/httprober | wc -l)
+total=$(echo $file | grep -o http | wc -l)
 echo "Detecting WAF"
 for i in $file
 do
@@ -208,7 +252,7 @@ for i in $file
 do
         echo "                {" >> "Database.json"
         echo "                        \"url\" : \"$i\"," >> "Database.json"
-        echo "                        \"dir\" : \"$count\"" >> "Database.json"
+        echo "                        \"dir\" : l\"$count\"" >> "Database.json"
         if [[ $count -eq $(($number1 - 1)) ]]
         then
                 echo "                }" >> "Database.json"
@@ -227,7 +271,8 @@ file=$(cat $waftemp)
 for i in $file
 do
         echo "                {" >> "Database.json"
-        echo "                        \"url\" : \"$i\"" >> "Database.json"
+        echo "                        \"url\" : \"$i\"," >> "Database.json"
+        echo "                        \"dir\" : f\"$count\"" >> "Database.json"
         if [[ $count != $(($number2 - 1)) ]]
         then
                 echo "                }," >> "Database.json"
@@ -253,18 +298,32 @@ for i in $file
 do
         stat $counter $total "Directories"
         temp=$(echo "${i//\/}")
-        Tools/feroxbuster $recursion -u "$i" -w "$wordlist" -x "$exten" -o "$temp"
+        Tools/feroxbuster $recursion -e -t 50 -u "$i" -w "$wordlist" -x "$exten" -o "$temp" 2>/dev/null
         cat $temp | awk '{print $0,"<br>"}' >> "$lootdir/$temp-Directory-Results"
-        sed -ir "s/\"dir\" : \"$count\"/\"dir\" : \"$temp-Directory-Results\"/" "$lootdir/Database.json"
+        sed -ir "s/\"dir\" : l\"$count\"/\"dir\" : \"$temp-Directory-Results\"/" "$lootdir/Database.json"
         count=$(($count + 1))
         counter=$(($counter + 1))
         rm $temp
         rm "$lootdir/Database.jsonr"
 done
 
+## Demo fo Waffull targets
+echo "Dummy File<br>" > "$lootdir/dummyfile"
+count=0
+counter=1
+file=$(cat $waftemp)
+total=$(awk /./ $waftemp | wc -l)
+for i in $file
+do
+        sed -ir "s/\"dir\" : f\"$count\"/\"dir\" : \"dummyfile\"/" "$lootdir/Database.json"
+        rm "$lootdir/Database.jsonr"
+        count=$(($count + 1))
+done
+
 #Delete temp files
 rm $waftemp
 rm $waflesstemp
+rm ferox-*
 
 #Deploy GUI
 echo "Deploying GUI"
