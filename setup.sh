@@ -2,9 +2,11 @@
 
 chmod +x scanner.sh
 mkdir Tools
+git clone https://github.com/projectdiscovery/dnsx.git Tools/dnsx-dir
+git clone https://github.com/projectdiscovery/subfinder.git Tools/subfinder-dir
 git clone https://github.com/tomnomnom/httprobe Tools/httprober
 curl -sL https://raw.githubusercontent.com/epi052/feroxbuster/master/install-nix.sh | bash
-mv feroxbuster Tools/
+mv feroxbuster Tools/.
 git clone https://github.com/EnableSecurity/wafw00f Tools/wafw00f
 git clone https://github.com/ChrisKnott/Eel Tools/Eel
 cd Tools/wafw00f/
@@ -21,3 +23,11 @@ cd Tools/httprober
 go build main.go
 mv main httprober
 cd ../..
+cd Tools/subfinder-dir/v2/cmd/subfinder
+go build .
+mv subfinder ../../../../.
+cd ../../../../..
+cd Tools/dnsx-dir/cmd/dnsx
+go build
+mv dnsx ../../../.
+cd ../../..
