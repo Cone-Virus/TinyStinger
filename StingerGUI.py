@@ -17,12 +17,12 @@ def waf_select(waf):
 
     return urls
 
-#Return list of directory results
+#Return list of selected results
 @eel.expose
-def url_select(waf):
+def url_select(waf, opt):
     urls = []
     for i in data[waf]:
-        temp = loot + '/' + i['dir']
+        temp = loot + '/' + i[opt]
         urls.append(temp)
 
     return urls
