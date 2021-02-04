@@ -195,7 +195,7 @@ do
         cat $temptemp >> $temptargets
 done
 
-if [ $outlist != "" ]
+if [ "$outlist" != "" ]
 then
         echo "Removing Out of Scope Targets"
         outofscope=$(cat $outlist)
