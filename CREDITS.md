@@ -8,3 +8,6 @@
 [Chris Knott](https://github.com/ChrisKnott)
 ## [HTTP Probe](https://github.com/tomnomnom/httprobe)
 [Tom Hudson](https://github.com/tomnomnom)
+## [Subdomain Finder](https://github.com/projectdiscovery/subfinder.git)
+## [DNS Validator](https://github.com/projectdiscovery/dnsx.git)
+[ProjectDiscovery](https://projectdiscovery.io/)
