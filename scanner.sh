@@ -6,7 +6,7 @@ wordlist="/usr/share/wordlists/dirb/common.txt"
 exten=""
 recursion="-n"
 outlist=""
-
+LTemp=""
 
 
 echo "
@@ -37,6 +37,7 @@ Options:
 
 --General Options--
 -GUI <BeeHive Loot>     : Load a Loot directory in BeeHive EX: BeeHive/LOOT-iSidt
+-n <Lootdir Name>       : Name the loot directory the results are put into EX: MyNextBugBounty
 
 --Scope Options--
 -os <Out of Scope List> : Load a list of targets out of scope to be removed from target list
@@ -161,7 +162,9 @@ do
                         fi
                         file_check "${args[$(($count + 1))]}" "Out of Scope List"
                         $outlist="${args[$(($count + 1))]}"
-
+                elif [ "$arg" == "-n" ]
+                then
+                        LTemp="${args[$(($count + 1))]}"
         fi
         count=$(($count+1))
 done
@@ -171,10 +174,16 @@ file_check "$URLFILE" "URL List"
 #Generate Temps
 waflesstemp=$(mktemp WAFless-XXXXXX)
 waftemp=$(mktemp WAF-XXXXXX)
-LTemp=$(mktemp -u LOOT-XXXXX)
+
+#Lootdir naming
+if [ "$LTemp" == "" ]
+then
+        LTemp=$(mktemp -u LOOT-XXXXX)
+fi
 lootdir=$(echo "BeeHive/$LTemp")
 mkdir $lootdir/
 
+#Setting extensions
 if [ "$exten" == "" ]
 then
         exten="php"
@@ -323,9 +332,8 @@ done
 #Delete temp files
 rm $waftemp
 rm $waflesstemp
-rm ferox-*
+rm ferox-* 2>/dev/null
 
 #Deploy GUI
 echo "Deploying GUI"
 python3 StingerGUI.py $lootdir
-
