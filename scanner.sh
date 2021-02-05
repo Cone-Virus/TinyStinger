@@ -161,7 +161,7 @@ do
                                 help_menu
                         fi
                         file_check "${args[$(($count + 1))]}" "Out of Scope List"
-                        $outlist="${args[$(($count + 1))]}"
+                        outlist="${args[$(($count + 1))]}"
                 elif [ "$arg" == "-n" ]
                 then
                         LTemp="${args[$(($count + 1))]}"
