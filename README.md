@@ -29,6 +29,7 @@ Options:
 
 --General Options--
 -GUI <BeeHive Loot>     : Load a Loot directory in BeeHive EX: BeeHive/LOOT-iSidt
+-n <Lootdir Name>       : Name the loot directory the results are put into EX: MyNextBugBounty
 
 --Scope Options--
 -os <Out of Scope List> : Load a list of targets out of scope to be removed from target list
