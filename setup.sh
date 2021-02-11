@@ -16,8 +16,8 @@ cd Tools/Eel/
 sudo python3 setup.py build
 sudo python3 setup.py install
 sudo pip3 install eel
-sudo pip3 -r requirements.txt
-sudo pip3 -r requirements-meta.txt
+sudo pip3 install -r requirements.txt
+sudo pip3 install -r requirements-meta.txt
 cd ../..
 sudo apt install -y golang
 cd Tools/httprober
