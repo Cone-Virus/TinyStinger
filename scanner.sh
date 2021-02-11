@@ -7,6 +7,7 @@ exten=""
 recursion="-n"
 outlist=""
 LTemp=""
+httppref="--prefer-https"
 
 
 echo "
@@ -41,6 +42,7 @@ Options:
 
 --Scope Options--
 -os <Out of Scope List> : Load a list of targets out of scope to be removed from target list
+-http                   : Checks http of targets
 
 --Directory Scanning--
 -w <Wordlist>           : Use a custom wordlist in directory scanning
@@ -164,6 +166,9 @@ do
                 elif [ "$arg" == "-n" ]
                 then
                         LTemp="${args[$(($count + 1))]}"
+                elif [ "$arg" == "-http" ]
+                then
+                        httppref=""
         fi
         count=$(($count+1))
 done
@@ -215,7 +220,7 @@ fi
 
 #Validate targets
 echo "Validating Targets"
-list=$(cat $temptargets | sort | uniq | Tools/dnsx 2>/dev/null | Tools/httprober/httprober)
+list=$(cat $temptargets | sort | uniq | Tools/dnsx 2>/dev/null | Tools/httprober/httprober $httppref)
 rm $temptemp
 rm $temptargets
 
