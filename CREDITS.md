@@ -1,5 +1,5 @@
-## [Directory Scanner](https://github.com/epi052/feroxbuster)
-[epi052](https://github.com/epi052)
+## [Directory Scanner](https://github.com/ffuf/ffuf)
+[ffuf](https://github.com/ffuf)
 ## [WAF Scanner](https://github.com/EnableSecurity/wafw00f)
 [Sandro Gauci](https://twitter.com/sandrogauci)
 
