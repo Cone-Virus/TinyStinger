@@ -45,8 +45,7 @@ Options:
 --Directory Scanning--
 -w <Wordlist>           : Use a custom wordlist in directory scanning
 -x <Extensions>         : Use a set of extensions in directory scanning EX: html,jpg,txt
--X <Extension List>     : Use a list of extensions in directory scanning
--r <Depth>              : Enable recursion and at what depth (0 is infinite) (1-4) EX: -r 3"
+-X <Extension List>     : Use a list of extensions in directory scanning"
         exit 0
 }
 
@@ -307,7 +306,7 @@ for i in $file
 do
         stat $counter $total "Directories"
         temp=$(echo "${i//\/}")
-        Tools/feroxbuster $recursion -e -t 50 -u "$i" -w "$wordlist" -x "$exten" -o "$temp" 2>/dev/null
+        Tools/ffuf  -u "$i""/FUZZ" -w "$wordlist" -e "$exten" -o "$temp" 2>/dev/null
         cat $temp | awk '{print $0,"<br>"}' >> "$lootdir/$temp-Directory-Results"
         sed -ir "s/\"dir\" : l\"$count\"/\"dir\" : \"$temp-Directory-Results\"/" "$lootdir/Database.json"
         count=$(($count + 1))
@@ -336,4 +335,5 @@ rm ferox-* 2>/dev/null
 
 #Deploy GUI
 echo "Deploying GUI"
+echo $lootdir
 python3 StingerGUI.py $lootdir
