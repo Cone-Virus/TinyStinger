@@ -2,11 +2,10 @@
 
 chmod +x scanner.sh
 mkdir Tools
+git clone https://github.com/ffuf/ffuf Tools/ffuf-dir
 git clone https://github.com/projectdiscovery/dnsx.git Tools/dnsx-dir
 git clone https://github.com/projectdiscovery/subfinder.git Tools/subfinder-dir
 git clone https://github.com/tomnomnom/httprobe Tools/httprober
-curl -sL https://raw.githubusercontent.com/epi052/feroxbuster/master/install-nix.sh | bash
-mv feroxbuster Tools/.
 git clone https://github.com/EnableSecurity/wafw00f Tools/wafw00f
 git clone https://github.com/ChrisKnott/Eel Tools/Eel
 cd Tools/wafw00f/
@@ -17,6 +16,8 @@ cd Tools/Eel/
 sudo python3 setup.py build
 sudo python3 setup.py install
 sudo pip3 install eel
+sudo pip3 -r requirements.txt
+sudo pip3 -r requirements-meta.txt
 cd ../..
 sudo apt install -y golang
 cd Tools/httprober
@@ -30,4 +31,9 @@ cd ../../../../..
 cd Tools/dnsx-dir/cmd/dnsx
 go build
 mv dnsx ../../../.
+cd ../../../..
+cd Tools/ffuf-dir
+go get
+go build
+mv ffuf ../.
 cd ../../..
