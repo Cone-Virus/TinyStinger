@@ -306,8 +306,8 @@ for i in $file
 do
         stat $counter $total "Directories"
         temp=$(echo "${i//\/}")
-        Tools/ffuf  -u "$i""/FUZZ" -w "$wordlist" -e "$exten" -o "$temp" 2>/dev/null
-        cat $temp | awk '{print $0,"<br>"}' >> "$lootdir/$temp-Directory-Results"
+        Tools/ffuf  -u "$i""/FUZZ" -w "$wordlist" -e "$exten" -of 'html' -o "$temp" 2>/dev/null
+        cat $temp | grep -v "<pre>.*</pre>" >> "$lootdir/$temp-Directory-Results"
         sed -ir "s/\"dir\" : l\"$count\"/\"dir\" : \"$temp-Directory-Results\"/" "$lootdir/Database.json"
         count=$(($count + 1))
         counter=$(($counter + 1))
@@ -335,5 +335,4 @@ rm ferox-* 2>/dev/null
 
 #Deploy GUI
 echo "Deploying GUI"
-echo $lootdir
 python3 StingerGUI.py $lootdir
