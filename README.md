@@ -4,7 +4,7 @@
 A small Bug Bounty scanner that I have been working on to not only make doing bug bounties easier but to help other small bug bounty enthuasiasts.
 - Keep in mind
 
-I am not an expert coder so there will probably be a ton of bugs and if something bad happens to your system I am not liable. But nothing should just a quick disclaimer. --Dirbusting may break your VM until further notice I am looking for an alternative--
+I am not an expert coder so there will probably be a ton of bugs and if something bad happens to your system I am not liable. But nothing should just a quick disclaimer.
 ## Usage 
 - Before first use do the following:
 ```
@@ -13,7 +13,6 @@ chmod +x setup.sh
 ```
 - Usage
 ```
-./scanner.sh -h
 
 ▀█▀ █ █▄░█ █▄█   █▀ ▀█▀ █ █▄░█ █▀▀ █▀▀ █▀█
 ░█░ █ █░▀█ ░█░   ▄█ ░█░ █ █░▀█ █▄█ ██▄ █▀▄
@@ -33,12 +32,12 @@ Options:
 
 --Scope Options--
 -os <Out of Scope List> : Load a list of targets out of scope to be removed from target list
+-http                   : Checks http of targets
 
 --Directory Scanning--
 -w <Wordlist>           : Use a custom wordlist in directory scanning
 -x <Extensions>         : Use a set of extensions in directory scanning EX: html,jpg,txt
 -X <Extension List>     : Use a list of extensions in directory scanning
--r <Depth>              : Enable recursion and at what depth (0 is infinite) (1-4) EX: -r 3
 ```
 ## TODO
 - [x] Add A GUI
