@@ -67,6 +67,25 @@ function file_check(){
 
 }
 
+# Convert spider results to HTML
+function spidertohtml()
+{
+        echo "<html>
+<head>
+<style>
+p.title {
+  font-size: 30px;
+}
+</style>
+</head>
+<body>
+
+<p class="title">Tiny Spider</p>"
+        cat $1
+        echo "</body>
+</html>"
+}
+
 #Simple check to see if setup.sh was run
 if ! [[  -d "Tools/httprober"  &&  -d "Tools/wafw00f" ]]
 then
@@ -190,7 +209,7 @@ mkdir $lootdir/
 #Setting extensions
 if [ "$exten" == "" ]
 then
-        exten="php"
+        exten=".php"
 fi
 
 echo "Reading List"
@@ -265,7 +284,8 @@ for i in $file
 do
         echo "                {" >> "Database.json"
         echo "                        \"url\" : \"$i\"," >> "Database.json"
-        echo "                        \"dir\" : l\"$count\"" >> "Database.json"
+        echo "                        \"dir\" : l\"$count\"," >> "Database.json"
+        echo "                        \"spid\" : l\"$count\"" >> "Database.json"
         if [[ $count -eq $(($number1 - 1)) ]]
         then
                 echo "                }" >> "Database.json"
@@ -313,11 +333,15 @@ do
         temp=$(echo "${i//\/}")
         Tools/ffuf  -u "$i""/FUZZ" -w "$wordlist" -e "$exten" -of 'html' -o "$temp" 2>/dev/null
         cat $temp | grep -v "<pre>.*</pre>" >> "$lootdir/$temp-Directory-Results"
-        sed -ir "s/\"dir\" : l\"$count\"/\"dir\" : \"$temp-Directory-Results\"/" "$lootdir/Database.json"
+        sed -i "s/\"dir\" : l\"$count\"/\"dir\" : \"$temp-Directory-Results\"/" "$lootdir/Database.json"
+        stat $counter $total "Spidering"
+        Tools/TinySpider/spider.sh -H "$i" | tail -n +8 > "$temp"
+        sed -i "s/$/\<br\>/g" "$temp"
+        spidertohtml $temp > "$lootdir/$temp-Spider-Results"
+        sed -i "s/\"spid\" : l\"$count\"/\"spid\" : \"$temp-Spider-Results\"/" "$lootdir/Database.json"
         count=$(($count + 1))
         counter=$(($counter + 1))
         rm $temp
-        rm "$lootdir/Database.jsonr"
 done
 
 ## Demo fo Waffull targets
@@ -336,8 +360,8 @@ done
 #Delete temp files
 rm $waftemp
 rm $waflesstemp
-rm ferox-* 2>/dev/null
 
 #Deploy GUI
 echo "Deploying GUI"
 python3 StingerGUI.py $lootdir
+
