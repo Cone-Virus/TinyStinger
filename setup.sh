@@ -6,6 +6,7 @@ git clone https://github.com/ffuf/ffuf Tools/ffuf-dir
 git clone https://github.com/projectdiscovery/dnsx.git Tools/dnsx-dir
 git clone https://github.com/projectdiscovery/subfinder.git Tools/subfinder-dir
 git clone https://github.com/tomnomnom/httprobe Tools/httprober
+git clone https://github.com/Cone-Virus/TinySpider Tools/TinySpider
 git clone https://github.com/EnableSecurity/wafw00f Tools/wafw00f
 git clone https://github.com/ChrisKnott/Eel Tools/Eel
 cd Tools/wafw00f/
@@ -37,3 +38,5 @@ go get
 go build
 mv ffuf ../.
 cd ../../..
+chmod +x Tools/TinySpider/spider.sh
+
