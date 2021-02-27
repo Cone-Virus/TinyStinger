@@ -37,6 +37,6 @@ cd Tools/ffuf-dir
 go get
 go build
 mv ffuf ../.
-cd ../../..
+cd ../..
 chmod +x Tools/TinySpider/spider.sh
 
